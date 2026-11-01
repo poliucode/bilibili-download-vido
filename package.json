@@ -1,0 +1,74 @@
+{
+    "name": "bilibili-download-vido",
+    "version": "0.2.0",
+    "private": true,
+    "description": "哔哩哔哩高画质本地下载客户端",
+    "author": "Vido",
+    "main": "out/main/index.js",
+    "scripts": {
+        "setup": "node node_modules/electron/install.js",
+        "dev": "electron-vite dev",
+        "build": "npm run typecheck && electron-vite build",
+        "typecheck": "tsc --noEmit",
+        "test": "tsx --test tests/*.test.ts && python -m unittest discover -s engine/tests -v",
+        "test:desktop": "npm run build && node scripts/smoke-desktop.cjs",
+        "test:watermark": "npm run build && node scripts/smoke-watermark.cjs",
+        "package:engine": "powershell -NoProfile -ExecutionPolicy Bypass -File packaging/build-engine.ps1",
+        "package:dir": "npm run build && npm run package:engine && electron-builder --win --x64 --dir",
+        "package:win": "npm run build && npm run package:engine && electron-builder --win nsis --x64"
+    },
+    "dependencies": {
+        "lucide-react": "^0.468.0",
+        "react": "19.3.1",
+        "react-dom": "19.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "@types/react": "^19.0.0",
+        "@types/react-dom": "^19.0.0",
+        "@vitejs/plugin-react": "^5.0.0",
+        "electron": "44.9.0",
+        "electron-builder": "26.18.0",
+        "electron-vite": "6.0.0",
+        "playwright": "^1.56.0",
+        "tsx": "^4.20.0",
+        "typescript": "^5.9.0",
+        "vite": "^7.0.0"
+    },
+    "build": {
+        "appId": "local.vido.bilibili",
+        "productName": "Bilibili Vido",
+        "directories": {
+            "output": "release/${version}"
+        },
+        "files": [
+            "out/**/*",
+            "package.json"
+        ],
+        "extraResources": [
+            {
+                "from": "build-resources/engine",
+                "to": "engine"
+            },
+            {
+                "from": "build-resources/tools",
+                "to": "tools"
+            },
+            {
+                "from": "build-resources/licenses",
+                "to": "licenses"
+            }
+        ],
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "signAndEditExecutable": false
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true
+        }
+    }
+}
